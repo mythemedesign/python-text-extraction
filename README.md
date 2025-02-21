@@ -15,6 +15,8 @@ It includes rate limiting, CORS middleware, and token counting for the uploaded 
 
 `RATE_LIMIT (str)`: Rate limit for requests (10 requests per minute).
 
+## Setup:
+
 To set up and run the FastAPI application for file extraction, follow these steps:
 
 ### 1. Clone the Repository
