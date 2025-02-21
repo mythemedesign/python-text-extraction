@@ -61,18 +61,18 @@ This will start the server on http://127.0.0.1:8000.
 
 ### 5. Test the Application
 
-#### Text Extraction
+#### - Text Extraction
 
 Send POST request to `http://127.0.0.1:8000/extract-data` (multiple files could be uploaded at once)
 -> return extracted data and token size
 
-#### Related Links
+#### - Related Links
 
 Send POST request to `http://127.0.0.1:8000/web-links`
 `{ "url" : "https://example.com" }`
 -> return all links from the url
 
-#### Web Scraping
+#### - Web Scraping
 
 Send POST request to `http://127.0.0.1:8000/web-scrape`
 `{ "url" : "https://example.com/page" }`
