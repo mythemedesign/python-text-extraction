@@ -1,3 +1,5 @@
+# Python Text Extraction
+
 This script sets up a FastAPI application to handle file uploads and extract text data from various file formats.
 Supported file types: `pdf`, `txt`, `md`, `xls`, `xlsx`, `csv`, `json`, `doc`, `docx`
 
@@ -30,7 +32,8 @@ Create a virtual environment to manage dependencies:
 
 ```
 python3 -m venv .venv
-source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
+source .venv/bin/activate
+# On Windows, use `.venv\Scripts\activate`
 ```
 
 ### 3. Install Dependencies
