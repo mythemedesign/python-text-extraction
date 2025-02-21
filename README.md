@@ -16,6 +16,8 @@ It includes rate limiting, CORS middleware, and token counting for the uploaded 
 
 `RATE_LIMIT (str)`: Rate limit for requests (10 requests per minute).
 
+`MAX_PAGES_TO_FETCH (int)`: Maximum number of pages to fetch (20 pages)
+
 ## Setup:
 
 To set up and run the FastAPI application for file extraction, follow these steps:
