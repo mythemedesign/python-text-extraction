@@ -1,6 +1,7 @@
-# Python Text Extraction
+# Python Text Extraction & Web Scraping
 
-This script sets up a FastAPI application to handle file uploads and extract text data from various file formats.
+This script sets up a FastAPI application to handle file uploads and extract text data from various file formats and also scrape web pages and grab links of related pages.
+
 Supported file types: `pdf`, `txt`, `md`, `xls`, `xlsx`, `csv`, `json`, `doc`, `docx`
 
 It includes rate limiting, CORS middleware, and token counting for the uploaded data.
@@ -58,4 +59,19 @@ This will start the server on http://127.0.0.1:8000.
 
 ### 5. Test the Application
 
-You can test the application by sending a POST request to `http://127.0.0.1:8000/upload` with files to be uploaded and processed.
+#### Text Extraction
+
+Send POST request to `http://127.0.0.1:8000/extract-data` (multiple files could be uploaded at once)
+-> return extracted data and token size
+
+#### Related Links
+
+Send POST request to `http://127.0.0.1:8000/web-links`
+`{ "url" : "https://example.com" }`
+-> return all links from the url
+
+#### Web Scraping
+
+Send POST request to `http://127.0.0.1:8000/web-scrape`
+`{ "url" : "https://example.com/page" }`
+-> return extracted data from the scraped url
