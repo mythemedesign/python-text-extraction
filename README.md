@@ -67,6 +67,9 @@ uvicorn main:app --reload
 Send POST request to
 
 `http://127.0.0.1:8000/extract-data`
+```
+<form-data> { "files" :  "file_1.pdf, file2.docx" }
+```
 
 (multiple files could be uploaded at once)
 
