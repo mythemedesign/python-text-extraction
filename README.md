@@ -10,7 +10,7 @@ It includes rate limiting, CORS middleware, and token counting for the uploaded 
 
 `UPLOAD_DIR (str)`: Directory to store uploaded files.
 
-`UPLOAD_DIR (str)`: Directory to store uploaded files.
+`SAVE_DATASET_DIR (str)`: Directory to store dataset files.
 
 `MAX_FILE_SIZE (int)`: Maximum allowed file size for uploads (10MB).
 
@@ -22,8 +22,8 @@ It includes rate limiting, CORS middleware, and token counting for the uploaded 
 
 ## Setup:
 
-To set up and run the FastAPI application for file extraction, follow these steps:
----
+## To set up and run the FastAPI application for file extraction, follow these steps:
+
 ### 1. Clone the Repository
 
 First, clone the repository to your local machine:
@@ -32,7 +32,9 @@ First, clone the repository to your local machine:
 git clone <repository_url>
 cd <repository_directory>
 ```
+
 ---
+
 ### 2. Create a Virtual Environment
 
 Create a virtual environment to manage dependencies:
@@ -42,7 +44,9 @@ python3 -m venv .venv
 source .venv/bin/activate
 # On Windows, use `.venv\Scripts\activate`
 ```
+
 ---
+
 ### 3. Install Dependencies
 
 Install the required dependencies using pip:
@@ -50,7 +54,9 @@ Install the required dependencies using pip:
 ```
 pip install -r requirements.txt
 ```
+
 ---
+
 ### 4. Run the Application
 
 Run the FastAPI application using uvicorn:
@@ -62,6 +68,7 @@ uvicorn main:app --reload
 > This will start the server on http://127.0.0.1:8000.
 
 ---
+
 ### 5. Test the Application
 
 #### - Text Extraction
@@ -69,6 +76,7 @@ uvicorn main:app --reload
 Send POST request to
 
 `http://127.0.0.1:8000/extract-data`
+
 ```
 <form-data> { "files" :  "file_1.pdf, file2.docx" }
 ```
