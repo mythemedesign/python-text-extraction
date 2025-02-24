@@ -9,13 +9,14 @@ import uvicorn
 import json
 import random
 from datetime import datetime
-from slowapi import Limiter
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
-from starlette.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
 import requests
 from bs4 import BeautifulSoup
+
+# from slowapi import Limiter
+# from slowapi.util import get_remote_address
+# from slowapi.errors import RateLimitExceeded
+# from starlette.responses import JSONResponse
+# from fastapi.middleware.cors import CORSMiddleware
 
 # Allowed origins (Adjust as needed)
 # origins = [
@@ -377,7 +378,7 @@ async def web_scrape(request: Request, body: dict[str, str] = Body(...)):
             file.write(str(data))
 
         return {
-            "message": "Data fetched successfully.",
+            "message": "Data fetched successfully and inserted into file.",
             "file_name": unique_filename,
             "token_size": token_size,
         }

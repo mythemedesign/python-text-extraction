@@ -10,6 +10,8 @@ It includes rate limiting, CORS middleware, and token counting for the uploaded 
 
 `UPLOAD_DIR (str)`: Directory to store uploaded files.
 
+`UPLOAD_DIR (str)`: Directory to store uploaded files.
+
 `MAX_FILE_SIZE (int)`: Maximum allowed file size for uploads (10MB).
 
 `MAX_TOKEN_SIZE (int)`: Maximum allowed token size for input data (10,000 tokens).
