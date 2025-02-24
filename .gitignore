@@ -19,6 +19,7 @@ wheels/
 .installed.cfg
 *.egg
 /uploads
+/save_dataset
 
 # Virtual Environment
 venv/

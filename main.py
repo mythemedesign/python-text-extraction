@@ -18,41 +18,40 @@ import requests
 from bs4 import BeautifulSoup
 
 # Allowed origins (Adjust as needed)
-origins = [
-    "http://localhost:3000",
-    "https://yourfrontend.com",
-]
+# origins = [
+#     "http://localhost:3000",
+#     "https://yourfrontend.com",
+# ]
 
 # Define constants
 UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+SAVE_DATASET_DIR = "save_dataset"
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB upload file size limit
 MAX_TOKEN_SIZE = 10000  # 10k input tokens limit
-RATE_LIMIT = "10/minute"  # Rate limit: 5 requests per minute
+# RATE_LIMIT = "10/minute"  # Rate limit: 5 requests per minute
 MAX_PAGES_TO_FETCH = 20  # Maximum number of pages to fetch
 HEADERS_WEB_SCRAPE = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
 }
 app = FastAPI()
-limiter = Limiter(key_func=get_remote_address)
-
+# limiter = Limiter(key_func=get_remote_address)
 
 # Add rate limit exception handler
-@app.exception_handler(RateLimitExceeded)
-async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
-    return JSONResponse(
-        status_code=429, content={"error": "Too many requests. Try again later."}
-    )
+# @app.exception_handler(RateLimitExceeded)
+# async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+#     return JSONResponse(
+#         status_code=429, content={"error": "Too many requests. Try again later."}
+#     )
 
 
 # Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,  # Allow specific origins
-    allow_credentials=True,  # Allow cookies & authentication headers
-    allow_methods=["GET", "POST"],  # Allowed methods
-    allow_headers=["*"],  # Allow all headers
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,  # Allow specific origins
+#     allow_credentials=True,  # Allow cookies & authentication headers
+#     allow_methods=["GET", "POST"],  # Allowed methods
+#     allow_headers=["*"],  # Allow all headers
+# )
 
 
 # count tokens of dataset
@@ -106,16 +105,21 @@ def dataset_create(filename):
 # generate unique filename
 def generate_unique_filename(filename):
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    random_number = random.randint(10000, 99999)
+    random_number = random.randint(1000000, 9999999)
     ext = filename.split(".")[-1]
     return f"{timestamp}_{random_number}.{ext}"
 
 
 @app.post("/extract-data")
-@limiter.limit(RATE_LIMIT)
+# @limiter.limit(RATE_LIMIT)
 async def upload_files(request: Request, files: list[UploadFile] = File(...)):
     try:
         dataset = []
+        if files[0].filename == "":
+            raise HTTPException(
+                status_code=413,
+                detail="No files uploaded.",
+            )
 
         for file in files:
             if file.size > MAX_FILE_SIZE:
@@ -124,6 +128,7 @@ async def upload_files(request: Request, files: list[UploadFile] = File(...)):
                     detail=f"File size limit exceeded: > {file.filename}",
                 )
             unique_filename = generate_unique_filename(file.filename)
+            os.makedirs(UPLOAD_DIR, exist_ok=True)
             file_location = os.path.join(UPLOAD_DIR, unique_filename)
             with open(file_location, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
@@ -132,13 +137,27 @@ async def upload_files(request: Request, files: list[UploadFile] = File(...)):
             if dataset_file != None:
                 dataset.append(dataset_file)
 
+        # count tokens of dataset
         token_size = count_tokens(str(dataset))
         if token_size > MAX_TOKEN_SIZE:
             raise HTTPException(
                 status_code=413,
-                detail=f"Token size: {token_size} - Max token limit exceeded",
+                detail=f"Max token size limit exceeded! - Token size: {token_size}",
             )
-        return {"dataset": dataset, "token_size": token_size}
+
+        # save dataset to file
+        unique_filename = generate_unique_filename("dataset.json")
+        os.makedirs(SAVE_DATASET_DIR, exist_ok=True)
+        file_path = os.path.join(SAVE_DATASET_DIR, unique_filename)
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write(str(dataset))
+
+        return {
+            "message": "Data extracted successfully into file.",
+            "file_name": unique_filename,
+            "token_size": token_size,
+        }
+
     except Exception as e:
         raise HTTPException(
             status_code=413,
@@ -147,7 +166,7 @@ async def upload_files(request: Request, files: list[UploadFile] = File(...)):
 
 
 @app.post("/web-links")
-@limiter.limit(RATE_LIMIT)
+# @limiter.limit(RATE_LIMIT)
 async def web_links(request: Request, body: dict[str, str] = Body(...)):
     # request example
     # { "url" : "https://example.com" }
@@ -164,6 +183,7 @@ async def web_links(request: Request, body: dict[str, str] = Body(...)):
 
         urls_list = set()
         urls_list.add(url)
+
         # Find all links on the page and fetch them
         for link in soup.find_all("a", href=True):
             next_url = link["href"]
@@ -207,7 +227,7 @@ async def web_links(request: Request, body: dict[str, str] = Body(...)):
 
 
 @app.post("/web-scrape")
-@limiter.limit(RATE_LIMIT)
+# @limiter.limit(RATE_LIMIT)
 async def web_scrape(request: Request, body: dict[str, str] = Body(...)):
     # request example
     # { "url" : "https://example.com/page" }
@@ -341,7 +361,26 @@ async def web_scrape(request: Request, body: dict[str, str] = Body(...)):
         # set content
         data["content"] = soup.get_text(separator="\n", strip=True)
 
-        return data
+        # count tokens of dataset
+        token_size = count_tokens(str(data))
+        if token_size > MAX_TOKEN_SIZE:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Token size: {token_size} - Max token limit exceeded",
+            )
+
+        # save dataset to file
+        unique_filename = generate_unique_filename("dataset.json")
+        os.makedirs(SAVE_DATASET_DIR, exist_ok=True)
+        file_path = os.path.join(SAVE_DATASET_DIR, unique_filename)
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write(str(data))
+
+        return {
+            "message": "Data fetched successfully.",
+            "file_name": unique_filename,
+            "token_size": token_size,
+        }
 
     except Exception as e:
         raise HTTPException(
